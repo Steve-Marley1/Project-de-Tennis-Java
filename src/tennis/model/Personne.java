@@ -154,6 +154,8 @@ public class Personne {
     }
 
     // d) âge vivant ou décédé
+    
+    // Pour précision on a utilisé les opérations ternaires pour réduire le code et ne pas écrire de longues conditionsr
     public int getAge() {
         LocalDate fin = (dateDeces != null) ? dateDeces : LocalDate.now();
         return Period.between(dateNaissance, fin).getYears();
