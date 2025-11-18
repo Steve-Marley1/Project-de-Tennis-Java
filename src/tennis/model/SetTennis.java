@@ -1,39 +1,66 @@
+package tennis.model;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package tennis.model;
 
 /**
  *
  * @author steve
  */
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 public class SetTennis {
 
-    private Joueur joueur1;
-    private Joueur joueur2;
+    private final Joueur joueur1;
+    private final Joueur joueur2;
 
     private int jeuxJoueur1;
     private int jeuxJoueur2;
 
-    private List<Jeu> jeux;
-
+    private final List<Jeu> jeux; 
     private boolean termine;
     private Joueur gagnant;
+    
+    /*
+     -Joueur qui sert au début du Set.
+     - Le service alterne à chaque Jeu.
+     */
+    private Joueur serveurCourant;
+    
+    public SetTennis(Joueur joueur1, Joueur joueur2, Joueur serveurInitial) {
+        if (joueur1 == null || joueur2 == null) {
+            throw new IllegalArgumentException("Les joueurs du Set ne peuvent pas être nuls.");
+        }
+        if (serveurInitial == null) {
+            throw new IllegalArgumentException("Le serveur initial ne peut pas être nul.");
+        }
+        if (serveurInitial != joueur1 && serveurInitial != joueur2) {
+            throw new IllegalArgumentException("Le serveur initial doit être l'un des deux joueurs du Set.");
+        }
 
-    public SetTennis(Joueur joueur1, Joueur joueur2) {
         this.joueur1 = joueur1;
         this.joueur2 = joueur2;
+        this.serveurCourant = serveurInitial;
+
         this.jeuxJoueur1 = 0;
         this.jeuxJoueur2 = 0;
-        this.jeux = new ArrayList<>();
         this.termine = false;
         this.gagnant = null;
+
+        this.jeux = new LinkedList<>();
+    }
+
+    public Joueur getJoueur1() {
+        return joueur1;
+    }
+
+    public Joueur getJoueur2() {
+        return joueur2;
     }
 
     public int getJeuxJoueur1() {
@@ -52,43 +79,69 @@ public class SetTennis {
         return gagnant;
     }
 
-    public String getScoreSet() {
-        return jeuxJoueur1 + " - " + jeuxJoueur2;
+    public List<Jeu> getJeux() {
+        return jeux;
     }
 
-    public Joueur jouerSet(Scanner scanner, ArbitreCentral arbitre, Joueur serveurInitial) {
-        Joueur serveur = serveurInitial;
-        Joueur receveur = (serveur == joueur1) ? joueur2 : joueur1;
+    public Joueur getServeurCourant() {
+        return serveurCourant;
+    }
+
+    public Joueur jouerSet(Scanner scanner, Arbitre arbitre) {
+        if (scanner == null) {
+            throw new IllegalArgumentException("Le scanner ne doit pas être nul.");
+        }
+        if (arbitre == null) {
+            throw new IllegalArgumentException("L'arbitre ne doit pas être nul.");
+        }
+
+        System.out.println();
+        System.out.println("=== Nouveau Set ===");
+        System.out.println("Joueur 1 : " + joueur1.getPrenom());
+        System.out.println("Joueur 2 : " + joueur2.getPrenom());
+        System.out.println("Serveur initial : " + serveurCourant.getPrenom());
 
         while (!termine) {
-            Jeu jeu = new Jeu(serveur, receveur);
+            Joueur receveur = (serveurCourant == joueur1) ? joueur2 : joueur1;
+
+            Jeu jeu = new Jeu(serveurCourant, receveur);
+            Joueur gagnantJeu = jeu.jouerJeu(scanner, arbitre);
+
             jeux.add(jeu);
 
-            Joueur gagnantJeu = jeu.jouerJeu(scanner, arbitre);
             if (gagnantJeu == joueur1) {
                 jeuxJoueur1++;
-            } else {
+            } else if (gagnantJeu == joueur2) {
                 jeuxJoueur2++;
+            } else {
+                throw new IllegalStateException("Gagnant du Jeu inconnu.");
             }
 
-            // Arbitre annonce fin de jeu + score du set
-            arbitre.annoncerFinJeu(gagnantJeu, this);
+            arbitre.annoncerFinJeu(gagnantJeu, jeuxJoueur1, jeuxJoueur2);
 
-            // Vérifier si le set est gagné (sans tie-break ici)
-            if ((jeuxJoueur1 >= 6 || jeuxJoueur2 >= 6)
-                    && Math.abs(jeuxJoueur1 - jeuxJoueur2) >= 2) {
-                termine = true;
-                gagnant = (jeuxJoueur1 > jeuxJoueur2) ? joueur1 : joueur2;
-                arbitre.annoncerFinSet(gagnant, this);
-            }
+            verifierFinSet(arbitre);
 
-            // inversion serveur/receveur pour le jeu suivant
-            Joueur tmp = serveur;
-            serveur = receveur;
-            receveur = tmp;
+            serveurCourant = receveur;
         }
 
         return gagnant;
     }
-}
 
+    private void verifierFinSet(Arbitre arbitre) {
+        if (jeuxJoueur1 >= 6 || jeuxJoueur2 >= 6) {
+            int ecart = Math.abs(jeuxJoueur1 - jeuxJoueur2);
+            if (ecart >= 2 || jeuxJoueur1 == 7 || jeuxJoueur2 == 7) {
+                termine = true;
+                gagnant = (jeuxJoueur1 > jeuxJoueur2) ? joueur1 : joueur2;
+                arbitre.annoncerFinSet(gagnant, jeuxJoueur1, jeuxJoueur2);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Set : " + joueur1.getPrenom() + " " + jeuxJoueur1
+                + " / " + joueur2.getPrenom() + " " + jeuxJoueur2
+                + " | Terminé=" + termine;
+    }
+}

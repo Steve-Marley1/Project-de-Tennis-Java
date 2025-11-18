@@ -10,5 +10,5 @@ package tennis.model;
  */
 public enum Genre {
     HOMME, 
-    FEMME,
+    FEMME
 }

@@ -12,16 +12,19 @@ import java.util.Scanner;
 
 public class Jeu {
 
-    private Joueur serveur;
-    private Joueur receveur;
-
+    
+    private final Joueur serveur;
+    private final Joueur receveur;
     private int pointsServeur;
     private int pointsReceveur;
-
     private boolean termine;
     private Joueur gagnant;
 
-    public Jeu(Joueur serveur, Joueur receveur) {
+    
+        public Jeu(Joueur serveur, Joueur receveur) {
+        if (serveur == null || receveur == null) {
+            throw new IllegalArgumentException("Les joueurs du Jeu ne peuvent pas être nuls.");
+        }
         this.serveur = serveur;
         this.receveur = receveur;
         this.pointsServeur = 0;
@@ -38,6 +41,14 @@ public class Jeu {
         return receveur;
     }
 
+    public int getPointsServeur() {
+        return pointsServeur;
+    }
+
+    public int getPointsReceveur() {
+        return pointsReceveur;
+    }
+
     public boolean isTermine() {
         return termine;
     }
@@ -46,58 +57,58 @@ public class Jeu {
         return gagnant;
     }
 
-    public String getScoreTexte() {
-        return scoreTexte(pointsServeur, pointsReceveur);
-    }
-
-    private String scoreTexte(int pS, int pR) {
-        // gestion du cas avantage/égalité
-        if (pS >= 3 && pR >= 3) {
-            if (pS == pR) {
-                return "40 - 40";
-            } else if (pS == pR + 1) {
-                return "AV " + serveur;
-            } else if (pR == pS + 1) {
-                return "AV " + receveur;
-            }
+        public Joueur jouerJeu(Scanner scanner, Arbitre arbitre) {
+        if (scanner == null) {
+            throw new IllegalArgumentException("Le scanner ne doit pas être nul.");
         }
-        return convertirPoint(pS) + " - " + convertirPoint(pR);
-    }
-
-    private String convertirPoint(int p) {
-        switch (p) {
-            case 0: return "0";
-            case 1: return "15";
-            case 2: return "30";
-            case 3: return "40";
-            default: return "40"; // en pratique on ne devrait pas venir ici hors avantage
+        if (arbitre == null) {
+            throw new IllegalArgumentException("L'arbitre ne doit pas être nul.");
         }
-    }
 
-    public Joueur jouerJeu(Scanner scanner, ArbitreCentral arbitre) {
+        System.out.println();
+        System.out.println("=== Nouveau Jeu ===");
+        System.out.println("Serveur : " + serveur.getPrenom()
+                + " | Receveur : " + receveur.getPrenom());
+
         while (!termine) {
+            // On joue un échange
             Echange echange = new Echange(serveur, receveur);
-            Joueur gagnantPoint = echange.jouerEchange(scanner);
+            Joueur gagnantPoint = echange.jouerEchange(scanner, arbitre);
 
             if (gagnantPoint == serveur) {
                 pointsServeur++;
-            } else {
+            } else if (gagnantPoint == receveur) {
                 pointsReceveur++;
+            } else {
+                throw new IllegalStateException("Gagnant de l'échange inconnu.");
             }
 
-            // Vérifier si le jeu est gagné
-            if (pointsServeur >= 4 || pointsReceveur >= 4) {
-                int diff = Math.abs(pointsServeur - pointsReceveur);
-                if (diff >= 2) {
-                    termine = true;
-                    gagnant = (pointsServeur > pointsReceveur) ? serveur : receveur;
-                }
-            }
+            // L'arbitre annonce le score du Jeu
+            arbitre.annoncerScoreJeu(serveur, receveur, pointsServeur, pointsReceveur);
 
-            // L'arbitre annonce le score du jeu à la fin de l'échange
-            arbitre.annoncerScoreJeu(this);
+            // Vérifier si le Jeu est gagné
+            verifierFinJeu(arbitre);
         }
 
         return gagnant;
+    }
+            private void verifierFinJeu(Arbitre arbitre) {
+        if (pointsServeur >= 4 || pointsReceveur >= 4) {
+            int ecart = Math.abs(pointsServeur - pointsReceveur);
+            if (ecart >= 2) {
+                termine = true;
+                gagnant = (pointsServeur > pointsReceveur) ? serveur : receveur;
+                arbitre.annoncer("Jeu " + gagnant.getPrenom() + ".");
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Jeu : Serveur=" + serveur.getPrenom()
+                + ", Receveur=" + receveur.getPrenom()
+                + ", Points Serveur=" + pointsServeur
+                + ", Points Receveur=" + pointsReceveur
+                + ", Terminé=" + termine;
     }
 }

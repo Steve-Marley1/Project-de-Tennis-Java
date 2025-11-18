@@ -11,33 +11,50 @@ import java.time.LocalDate;
  */
 public class Spectatrice extends Spectateur {
 
-    private boolean porteLunettes;
-
+    private String descriptionLunettes;
     public Spectatrice(String nomNaissance,
+                       String nomCourant,
                        String prenom,
                        String surnom,
                        LocalDate dateNaissance,
                        String lieuNaissance,
                        String nationalite,
+                       int taille,
+                       double poids,
                        String tribune,
                        int numeroPlace,
-                       double prixBillet) {
+                       double prixBillet,
+                       String descriptionLunettes) {
 
-        super(nomNaissance, Genre.FEMME, prenom, surnom,
-              dateNaissance, lieuNaissance, nationalite,
-              tribune, numeroPlace, prixBillet);
+        super(nomNaissance, nomCourant, prenom, surnom,
+              dateNaissance, lieuNaissance, nationalite, taille, poids,
+              Genre.FEMME, tribune, numeroPlace, prixBillet);
 
-        this.porteLunettes = false;
+        if (descriptionLunettes == null || descriptionLunettes.isBlank()) {
+            throw new IllegalArgumentException("La description des lunettes doit être renseignée.");
+        }
+        this.descriptionLunettes = descriptionLunettes;
     }
 
-    public boolean isPorteLunettes() {
-        return porteLunettes;
+    public String getDescriptionLunettes() {
+        return descriptionLunettes;
     }
 
-    public void setPorteLunettes(boolean porteLunettes) {
-        this.porteLunettes = porteLunettes;
-        System.out.println(toString()
-                + " est reconnue par ses lunettes : "
-                + (porteLunettes ? "oui" : "non") + ".");
+     public void setDescriptionLunettes(String nouvelleDescription) {
+        if (nouvelleDescription == null || nouvelleDescription.isBlank()) {
+            throw new IllegalArgumentException("La description des lunettes doit être renseignée.");
+        }
+
+        if (!nouvelleDescription.equalsIgnoreCase(this.descriptionLunettes)) {
+            System.out.println(getPrenom() + " en tribune " + getTribune()
+                    + " change de lunettes : " + nouvelleDescription + ".");
+        }
+        this.descriptionLunettes = nouvelleDescription;
     }
+
+    @Override
+    public String toString() {
+        return "Spectatrice : " + super.toString()
+               + " | Lunettes : " + descriptionLunettes;
+    } 
 }

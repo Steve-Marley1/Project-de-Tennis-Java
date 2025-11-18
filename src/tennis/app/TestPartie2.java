@@ -8,47 +8,71 @@ package tennis.app;
  *
  * @author steve
  */
-import tennis.model.*;
 import java.time.LocalDate;
+import java.util.Scanner;
+import tennis.model.*;
 
 public class TestPartie2 {
 
     public static void main(String[] args) {
 
-        JoueurHomme j1 = new JoueurHomme(
-                "Nadal", "Rafael", "Rafa",
-                LocalDate.of(1986, 6, 3),
-                "Manacor", "Espagnole",
-                185, 85.0,
-                Main.GAUCHER,
-                "Nike", "Moya"
-        );
+        Scanner scanner = new Scanner(System.in);
 
-        Joueuse j2 = new Joueuse(
-                "Williams", "Serena", null,
-                LocalDate.of(1981, 9, 26),
-                "Saginaw", "Américaine",
-                175, 70.0,
+        JoueurHomme joueur1 = new JoueurHomme(
+                "DUPONT",
+                "DUPONT",
+                "Pierre",
+                "Pierrot",
+                LocalDate.of(1995, 5, 10),
+                "Paris",
+                "Française",
+                185,
+                80.0,
                 Main.DROITIER,
-                "Nike", "Mouratoglou"
+                "Nike",
+                "Coach Jean",
+                "Bleu"
         );
 
-        ArbitreCentral ac = new ArbitreCentral(
-                "Bernardes", Genre.HOMME, "Carlos", null,
-                LocalDate.of(1976, 3, 11),
-                "Recife", "Brésilienne",
-                "Chaise centrale Court Philippe-Chatrier"
+        Joueuse joueur2 = new Joueuse(
+                "MARTIN",
+                "MARTIN",
+                "Claire",
+                "Cla",
+                LocalDate.of(1998, 3, 22),
+                "Lyon",
+                "Française",
+                172,
+                65.0,
+                Main.GAUCHER,
+                "Adidas",
+                "Coach Marie",
+                "Rouge"
+        );
+
+        Arbitre arbitre = new Arbitre(
+                "LAMBERT",
+                "LAMBERT",
+                "Jacques",
+                "",
+                LocalDate.of(1975, 7, 30),
+                "Bordeaux",
+                "Française",
+                180,
+                78.0,
+                0.8
         );
 
         Match match = new Match(
-                j1,
-                j2,
-                ac,
+                joueur1,
+                joueur2,
+                arbitre,
                 CategorieMatch.SIMPLE_HOMME,
-                NiveauMatch.AMICAL,
-                2        // 2 sets gagnants
+                NiveauMatch.PREMIER_TOUR
         );
 
-        match.demarrerMatch();
+        match.demarrerMatch(scanner);
+
+        scanner.close();
     }
 }

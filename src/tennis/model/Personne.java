@@ -7,167 +7,197 @@ package tennis.model;
 
 import java.time.LocalDate;
 import java.time.Period ;
-
+import java.util.Objects;
 /**
  *
  * @author steve
  */
+
 public class Personne {
-    // Immuables après création
+    // Attribut Immuables
     private final String nomNaissance;
-    private final Genre genre;
     private final LocalDate dateNaissance;
     private final String lieuNaissance;
-    private final LocalDate dateDeces;   // peut être null si la personne est vivante
-
-    // Modifiables
-    private String nomCourant;           // seulement pour femme mariée (logique métier)
+    private final Genre genre;
+    
+    //Attributs modifiables
+    private String nomCourant;
     private String prenom;
     private String surnom;
+    private LocalDate dateDeces;
     private String nationalite;
-    private int taille;                  // en cm
-    private double poids;                // en kg
-
-    // 1er constructeur : personne vivante
+    private int taille;  // en cm
+    private double poids; // en kg
+    
+    //Constructeur
     public Personne(String nomNaissance,
-                    Genre genre,
+                    String nomCourant,
                     String prenom,
                     String surnom,
                     LocalDate dateNaissance,
                     String lieuNaissance,
                     String nationalite,
                     int taille,
-                    double poids) {
+                    double poids,
+                    Genre genre) {
+
+        if (nomNaissance == null || nomNaissance.isBlank())
+            throw new IllegalArgumentException("Le nom de naissance ne peut pas être vide.");
+
+        if (prenom == null || prenom.isBlank())
+            throw new IllegalArgumentException("Le prénom ne peut pas être vide.");
+
+        if (dateNaissance == null || dateNaissance.isAfter(LocalDate.now()))
+            throw new IllegalArgumentException("La date de naissance est invalide.");
+
+        if (lieuNaissance == null || lieuNaissance.isBlank())
+            throw new IllegalArgumentException("Le lieu de naissance est obligatoire.");
+
+        if (taille <= 0)
+            throw new IllegalArgumentException("La taille doit être positive.");
+
+        if (poids <= 0)
+            throw new IllegalArgumentException("Le poids doit être positif.");
+
+        if (genre == null)
+            throw new IllegalArgumentException("Le genre ne peut pas être nul.");
 
         this.nomNaissance = nomNaissance;
-        this.genre = genre;
-        this.dateNaissance = dateNaissance;
-        this.lieuNaissance = lieuNaissance;
-        this.dateDeces = null;   // vivant
-
+        this.nomCourant = (nomCourant == null || nomCourant.isBlank()) ? nomNaissance : nomCourant; //utilisation d'opérateur ternaire pour factoriser le code
         this.prenom = prenom;
         this.surnom = surnom;
+        this.dateNaissance = dateNaissance;
+        this.lieuNaissance = lieuNaissance;
         this.nationalite = nationalite;
         this.taille = taille;
         this.poids = poids;
-        this.nomCourant = null;
-    }
-
-    // 2e constructeur : personne décédée
-    public Personne(String nomNaissance,
-                    Genre genre,
-                    String prenom,
-                    String surnom,
-                    LocalDate dateNaissance,
-                    String lieuNaissance,
-                    LocalDate dateDeces,
-                    String nationalite,
-                    int taille,
-                    double poids) {
-
-        this.nomNaissance = nomNaissance;
         this.genre = genre;
-        this.dateNaissance = dateNaissance;
-        this.lieuNaissance = lieuNaissance;
-        this.dateDeces = dateDeces;  // décédée
+        
+        
 
-        this.prenom = prenom;
-        this.surnom = surnom;
-        this.nationalite = nationalite;
-        this.taille = taille;
-        this.poids = poids;
-        this.nomCourant = null;
     }
-
-    // Getters immuables
+    //Getters 
     public String getNomNaissance() {
         return nomNaissance;
     }
 
-    public Genre getGenre() {
-        return genre;
-    }
-
-    public LocalDate getDateNaissance() {
-        return dateNaissance;
-    }
-
-    public String getLieuNaissance() {
-        return lieuNaissance;
-    }
-
-    public LocalDate getDateDeces() {
-        return dateDeces;
-    }
-
-    // Getters / setters modifiables
-
     public String getNomCourant() {
         return nomCourant;
-    }
-
-    // On respecte la règle métier : nomCourant que pour une femme
-    public void setNomCourant(String nomCourant) {
-        if (this.genre == Genre.FEMME) {
-            this.nomCourant = nomCourant;
-        }
     }
 
     public String getPrenom() {
         return prenom;
     }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
     public String getSurnom() {
         return surnom;
     }
 
-    public void setSurnom(String surnom) {
-        this.surnom = surnom;
+    public LocalDate getDateNaissance() {
+        return dateNaissance;
+    }
+
+    public LocalDate getDateDeces() {
+        return dateDeces;
+    }
+
+    public String getLieuNaissance() {
+        return lieuNaissance;
     }
 
     public String getNationalite() {
         return nationalite;
     }
 
-    public void setNationalite(String nationalite) {
-        this.nationalite = nationalite;
-    }
-
     public int getTaille() {
         return taille;
-    }
-
-    public void setTaille(int taille) {
-        this.taille = taille;
     }
 
     public double getPoids() {
         return poids;
     }
 
-    public void setPoids(double poids) {
-        this.poids = poids;
+    public Genre getGenre() {
+        return genre;
     }
 
-    // d) âge vivant ou décédé
+    // Setters
     
-    // Pour précision on a utilisé les opérations ternaires pour réduire le code et ne pas écrire de longues conditionsr
-    public int getAge() {
-        LocalDate fin = (dateDeces != null) ? dateDeces : LocalDate.now();
+        public void setNomCourant(String nomCourant) {
+        if (nomCourant == null || nomCourant.isBlank())
+            throw new IllegalArgumentException("Le nom courant ne peut pas être vide.");
+        this.nomCourant = nomCourant;
+    }
+
+    public void setPrenom(String prenom) {
+        if (prenom == null || prenom.isBlank())
+            throw new IllegalArgumentException("Le prénom ne peut pas être vide.");
+        this.prenom = prenom;
+    }
+
+    public void setSurnom(String surnom) {
+        this.surnom = surnom; // peut être vide ou nul
+    }
+
+    
+      //La date de décès, une fois définie, ne peut plus être modifiée.
+  
+    public void setDateDeces(LocalDate dateDeces) {
+        if (this.dateDeces != null)
+            throw new IllegalStateException("La date de décès est déjà définie et ne peut plus changer.");
+
+        if (dateDeces != null && dateDeces.isBefore(dateNaissance))
+            throw new IllegalArgumentException("La date de décès ne peut pas être avant la naissance.");
+
+        this.dateDeces = dateDeces;
+    }
+
+    public void setNationalite(String nationalite) {
+        if (nationalite == null || nationalite.isBlank())
+            throw new IllegalArgumentException("La nationalité ne peut pas être vide.");
+        this.nationalite = nationalite;
+    }
+
+    public void setTaille(int taille) {
+        if (taille <= 0)
+            throw new IllegalArgumentException("La taille doit être positive.");
+        this.taille = taille;
+    }
+
+    public void setPoids(double poids) {
+        if (poids <= 0)
+            throw new IllegalArgumentException("Le poids doit être positif.");
+        this.poids = poids;
+    }
+    
+/*
+      Renvoie l'âge de la personne :
+       - si vivante → âge actuel
+       - si décédée → âge au moment du décès
+     */    
+    
+     public int getAge() {
+        LocalDate fin = (dateDeces == null) ? LocalDate.now() : dateDeces;
         return Period.between(dateNaissance, fin).getYears();
+    }
+ 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Personne)) return false;
+        Personne p = (Personne) o;
+        return nomNaissance.equalsIgnoreCase(p.nomNaissance) &&
+               prenom.equalsIgnoreCase(p.prenom) &&
+               dateNaissance.equals(p.dateNaissance);
     }
 
     @Override
-    public String toString() {
-        String nomAffiche = (nomCourant != null && !nomCourant.isBlank())
-                ? nomCourant
-                : nomNaissance;
-        return nomAffiche + " " + prenom;
+    public int hashCode() {
+        return Objects.hash(nomNaissance.toLowerCase(), prenom.toLowerCase(), dateNaissance);
     }
-    
-    
+  @Override
+    public String toString() {
+        return prenom + " " + nomCourant + " (" + genre + ")";
+    }
+
 }

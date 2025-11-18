@@ -10,19 +10,20 @@ package tennis.model;
  */
 
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
+//Notion de composition 
 public class Echange {
 
     private Joueur serveur;
     private Joueur receveur;
-    private boolean termine;
-    private Joueur gagnant;
-
-    public Echange(Joueur serveur, Joueur receveur) {
+   
+        public Echange(Joueur serveur, Joueur receveur) {
+        if (serveur == null || receveur == null) {
+            throw new IllegalArgumentException("Les joueurs de l'échange ne peuvent pas être nuls.");
+        }
         this.serveur = serveur;
         this.receveur = receveur;
-        this.termine = false;
-        this.gagnant = null;
     }
 
     public Joueur getServeur() {
@@ -32,64 +33,75 @@ public class Echange {
     public Joueur getReceveur() {
         return receveur;
     }
+    
+        public Joueur jouerEchange(Scanner scanner, Arbitre arbitre) {
+        if (scanner == null) {
+            throw new IllegalArgumentException("Le scanner ne doit pas être nul.");
+        }
+        if (arbitre == null) {
+            throw new IllegalArgumentException("L'arbitre ne doit pas être nul.");
+        }
 
-    public boolean isTermine() {
-        return termine;
-    }
-
-    public Joueur getGagnant() {
-        return gagnant;
-    }
-
-    /*
-     * Joue un échange en demandant à l'utilisateur ce qui se passe sur le service.
-     * Événements possibles :
-     *  - "faute"  : faute de service
-     *  - "filet"  : let, on rejoue la première balle
-     *  - "correct": service bon, puis on demande qui gagne le point
-     */
-    public Joueur jouerEchange(Scanner scanner) {
         int numeroService = 1;
-        while (!termine) {
-            System.out.println("Service n°" + numeroService + " (faute / filet / correct) : ");
-            String saisie = scanner.nextLine().trim().toLowerCase();
 
-            switch (saisie) {
-                case "faute":
-                    System.out.println("Service faute.");
+        while (true) {
+            System.out.println();
+            System.out.println("Service n°" + numeroService + " de " + serveur.getPrenom() + " : ");
+            System.out.println("  1 - Faute (filet ou dehors)");
+            System.out.println("  2 - Filet mais balle bonne (let, service à rejouer)");
+            System.out.println("  3 - Service correct");
+            int choix = lireChoix(scanner, 1, 3);
+
+            switch (choix) {
+                case 1: // Faute
                     if (numeroService == 1) {
+                        arbitre.annoncer("Première balle de " + serveur.getPrenom() + " faute.");
                         numeroService = 2;
-                        System.out.println("Deuxième balle.");
                     } else {
-                        System.out.println("Double faute, point pour le receveur.");
-                        gagnant = receveur;
-                        termine = true;
+                        arbitre.annoncer("Double faute de " + serveur.getPrenom() + ".");
+                        return receveur;
                     }
                     break;
 
-                case "filet":
-                    System.out.println("Let : la balle touche le filet mais est bonne, on rejoue la première balle.");
+                case 2: // Filet mais balle bonne (let)
+                    arbitre.annoncer("Let, service à rejouer.");
+                    // On rejoue une première balle, donc on revient à 1
                     numeroService = 1;
                     break;
 
-                case "correct":
-                    System.out.println("Service correct.");
-                    // On demande qui gagne le point
-                    System.out.println("Qui gagne l'échange ? (s = serveur, r = receveur) : ");
-                    String gagnantSaisie = scanner.nextLine().trim().toLowerCase();
-                    if (gagnantSaisie.equals("s")) {
-                        gagnant = serveur;
-                    } else {
-                        gagnant = receveur;
-                    }
-                    termine = true;
-                    break;
-
-                default:
-                    System.out.println("Saisie invalide, recommence.");
-                    break;
+                case 3: // Service correct
+                    arbitre.annoncer("Service correct de " + serveur.getPrenom() + ".");
+                    return determinerGagnantPoint(scanner, arbitre);
             }
         }
+    }
+        
+            private Joueur determinerGagnantPoint(Scanner scanner, Arbitre arbitre) {
+        System.out.println();
+        System.out.println("Qui gagne l'échange ?");
+        System.out.println("  1 - " + serveur.getPrenom() + " (serveur)");
+        System.out.println("  2 - " + receveur.getPrenom() + " (receveur)");
+        int choixGagnant = lireChoix(scanner, 1, 2);
+
+        Joueur gagnant = (choixGagnant == 1) ? serveur : receveur;
+        arbitre.annoncer("Point remporté par " + gagnant.getPrenom() + ".");
         return gagnant;
+    }
+    private int lireChoix(Scanner scanner, int min, int max) {
+        while (true) {
+            System.out.print("Votre choix (" + min + "-" + max + ") : ");
+            try {
+                int valeur = scanner.nextInt();
+                scanner.nextLine(); // vider la fin de ligne
+                if (valeur < min || valeur > max) {
+                    System.out.println("Veuillez saisir un nombre entre " + min + " et " + max + ".");
+                } else {
+                    return valeur;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrée invalide, merci de saisir un nombre.");
+                scanner.nextLine(); // on vide la saisie erronée
+            }
+        }
     }
 }

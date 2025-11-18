@@ -13,35 +13,49 @@ public class SpectateurHomme extends Spectateur {
 
     private String couleurChemise;
 
-    public SpectateurHomme(String nomNaissance,
+        public SpectateurHomme(String nomNaissance,
+                           String nomCourant,
                            String prenom,
                            String surnom,
                            LocalDate dateNaissance,
                            String lieuNaissance,
                            String nationalite,
+                           int taille,
+                           double poids,
                            String tribune,
                            int numeroPlace,
-                           double prixBillet) {
+                           double prixBillet,
+                           String couleurChemise) {
 
-        super(nomNaissance, Genre.HOMME, prenom, surnom,
-              dateNaissance, lieuNaissance, nationalite,
-              tribune, numeroPlace, prixBillet);
+        super(nomNaissance, nomCourant, prenom, surnom,
+              dateNaissance, lieuNaissance, nationalite, taille, poids,
+              Genre.HOMME, tribune, numeroPlace, prixBillet);
 
-        this.couleurChemise = "bleu";
+        if (couleurChemise == null || couleurChemise.isBlank()) {
+            throw new IllegalArgumentException("La couleur de la chemise doit être renseignée.");
+        }
+        this.couleurChemise = couleurChemise;
     }
 
     public String getCouleurChemise() {
         return couleurChemise;
     }
-
-    public void changerCouleurChemise(String nouvelleCouleur) {
+      public void setCouleurChemise(String nouvelleCouleur) {
         if (nouvelleCouleur == null || nouvelleCouleur.isBlank()) {
-            return;
+            throw new IllegalArgumentException("La couleur de la chemise doit être renseignée.");
         }
-        String ancienne = this.couleurChemise;
+
+        if (!nouvelleCouleur.equalsIgnoreCase(this.couleurChemise)) {
+            System.out.println(getPrenom() + " en tribune " + getTribune()
+                    + " met en évidence sa nouvelle chemise " + nouvelleCouleur + ".");
+        }
         this.couleurChemise = nouvelleCouleur;
-        System.out.println(toString()
-                + " met en évidence sa chemise "
-                + ancienne + " remplacée par " + nouvelleCouleur + ".");
     }
+
+    @Override
+    public String toString() {
+        return "Spectateur Homme : " + super.toString()
+               + " | Chemise : " + couleurChemise;
+    }
+
 }

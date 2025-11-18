@@ -3,70 +3,110 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package tennis.app;
-import tennis.model.*;
-import java.time.LocalDate;
 
 /**
  *
  * @author steve
  */
+import java.time.LocalDate;
+import tennis.model.*;
+
 public class TestPartie1 {
-    
+
     public static void main(String[] args) {
 
-        JoueurHomme j1 = new JoueurHomme(
-                "Nadal", "Rafael", "Rafa",
-                LocalDate.of(1986, 6, 3),
-                "Manacor", "Espagnole",
-                185, 85.0,
-                Main.GAUCHER,
-                "Nike", "Moya"
-        );
-
-        Joueuse j2 = new Joueuse(
-                "Williams", "Serena", null,
-                LocalDate.of(1981, 9, 26),
-                "Saginaw", "Américaine",
-                175, 70.0,
+        JoueurHomme joueur1 = new JoueurHomme(
+                "DUPONT",
+                "DUPONT",
+                "Pierre",
+                "Pierrot",
+                LocalDate.of(1995, 5, 10),
+                "Paris",
+                "Française",
+                185,
+                80.0,
                 Main.DROITIER,
-                "Nike", "Mouratoglou"
+                "Nike",
+                "Coach Jean",
+                "Bleu"
         );
 
-        ArbitreCentral ac = new ArbitreCentral(
-                "Bernardes", Genre.HOMME, "Carlos", null,
-                LocalDate.of(1976, 3, 11),
-                "Recife", "Brésilienne",
-                "Chaise centrale Court Philippe-Chatrier"
+        Joueuse joueuse1 = new Joueuse(
+                "MARTIN",
+                "MARTIN",
+                "Claire",
+                "Cla",
+                LocalDate.of(1998, 3, 22),
+                "Lyon",
+                "Française",
+                172,
+                65.0,
+                Main.GAUCHER,
+                "Adidas",
+                "Coach Marie",
+                "Rouge"
         );
 
-        SpectateurHomme sh = new SpectateurHomme(
-                "Dupont", "Jean", null,
-                LocalDate.of(1990, 1, 1),
-                "Lille", "Française",
-                "Tribune A", 42, 80.0
+        SpectateurHomme spectateur1 = new SpectateurHomme(
+                "DURAND",
+                "DURAND",
+                "Paul",
+                "",
+                LocalDate.of(1980, 1, 15),
+                "Marseille",
+                "Française",
+                178,
+                82.0,
+                "A",
+                12,
+                50.0,
+                "Blanche"
         );
 
-        Spectatrice sf = new Spectatrice(
-                "Martin", "Claire", null,
-                LocalDate.of(1995, 5, 12),
-                "Lyon", "Française",
-                "Tribune B", 17, 65.0
+        Spectatrice spectatrice1 = new Spectatrice(
+                "LEFEBVRE",
+                "LEFEBVRE",
+                "Sophie",
+                "",
+                LocalDate.of(1985, 9, 5),
+                "Lille",
+                "Française",
+                165,
+                60.0,
+                "B",
+                34,
+                45.0,
+                "Lunettes noires rondes"
         );
 
-        System.out.println(j1 + " age=" + j1.getAge() + ", tenue=" + j1.getTenue());
-        j1.changerCouleurTenue("blanc");
+        ArbitreCentral arbitreCentral = new ArbitreCentral(
+                "LAMBERT",
+                "LAMBERT",
+                "Jacques",
+                "",
+                LocalDate.of(1975, 7, 30),
+                "Bordeaux",
+                "Française",
+                180,
+                78.0,
+                0.8,
+                "Arbitre de chaise"
+        );
 
-        System.out.println(j2 + " age=" + j2.getAge() + ", tenue=" + j2.getTenue());
-        j2.changerCouleurTenue("rouge");
+        System.out.println(joueur1);
+        System.out.println(joueuse1);
+        System.out.println(spectateur1);
+        System.out.println(spectatrice1);
+        System.out.println(arbitreCentral);
 
-        ac.annoncer("Début du match.");
+        spectateur1.applaudir();
+        spectatrice1.crier();
 
-        sh.applaudir();
-        sh.changerCouleurChemise("verte");
+        joueur1.encourager();
+        joueuse1.boire();
 
-        sf.crier();
-        sf.setPorteLunettes(true);
+        arbitreCentral.annoncer("Début de l'échauffement.");
+
+        joueur1.appelerArbitre(arbitreCentral, "Balle annoncée faute.");
     }
-
-    
 }

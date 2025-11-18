@@ -8,114 +8,160 @@ package tennis.model;
  *
  * @author steve
  */
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Match {
 
-    private Joueur joueur1;
-    private Joueur joueur2;
-    private ArbitreCentral arbitre;
+    private final Joueur joueur1;
+    private final Joueur joueur2;
+    private final Arbitre arbitre;
+    private final CategorieMatch categorie;
+    private final NiveauMatch niveau;
 
-    private CategorieMatch categorie;
-    private NiveauMatch niveau;
-    private int nbSetsGagnants; // 2 ou 3
+    private final int nbSetsPourGagner;
 
-    private List<SetTennis> sets;
-
+    private final List<SetTennis> sets;
     private int setsJoueur1;
     private int setsJoueur2;
 
+    private boolean termine;
     private Joueur vainqueur;
-    private Joueur perdant;
 
     public Match(Joueur joueur1,
                  Joueur joueur2,
-                 ArbitreCentral arbitre,
+                 Arbitre arbitre,
                  CategorieMatch categorie,
-                 NiveauMatch niveau,
-                 int nbSetsGagnants) {
+                 NiveauMatch niveau) {
+
+        if (joueur1 == null || joueur2 == null) {
+            throw new IllegalArgumentException("Les joueurs du match ne peuvent pas être nuls.");
+        }
+        if (arbitre == null) {
+            throw new IllegalArgumentException("L'arbitre ne peut pas être nul.");
+        }
+        if (categorie == null) {
+            throw new IllegalArgumentException("La catégorie ne peut pas être nulle.");
+        }
+        if (niveau == null) {
+            throw new IllegalArgumentException("Le niveau ne peut pas être nul.");
+        }
 
         this.joueur1 = joueur1;
         this.joueur2 = joueur2;
         this.arbitre = arbitre;
         this.categorie = categorie;
         this.niveau = niveau;
-        this.nbSetsGagnants = nbSetsGagnants;
+
+        if (categorie == CategorieMatch.SIMPLE_HOMME) {
+            this.nbSetsPourGagner = 3;
+        } else {
+            this.nbSetsPourGagner = 2;
+        }
+
         this.sets = new ArrayList<>();
         this.setsJoueur1 = 0;
         this.setsJoueur2 = 0;
+        this.termine = false;
+        this.vainqueur = null;
+    }
+
+    public Joueur getJoueur1() {
+        return joueur1;
+    }
+
+    public Joueur getJoueur2() {
+        return joueur2;
+    }
+
+    public Arbitre getArbitre() {
+        return arbitre;
+    }
+
+    public CategorieMatch getCategorie() {
+        return categorie;
+    }
+
+    public NiveauMatch getNiveau() {
+        return niveau;
+    }
+
+    public int getNbSetsPourGagner() {
+        return nbSetsPourGagner;
+    }
+
+    public int getSetsJoueur1() {
+        return setsJoueur1;
+    }
+
+    public int getSetsJoueur2() {
+        return setsJoueur2;
+    }
+
+    public boolean isTermine() {
+        return termine;
     }
 
     public Joueur getVainqueur() {
         return vainqueur;
     }
 
-    public Joueur getPerdant() {
-        return perdant;
+    public List<SetTennis> getSets() {
+        return sets;
     }
 
-    public String getScoreMatch() {
-        return setsJoueur1 + " sets à " + setsJoueur2;
-    }
+    public Joueur demarrerMatch(Scanner scanner) {
+        if (scanner == null) {
+            throw new IllegalArgumentException("Le scanner ne doit pas être nul.");
+        }
 
-    private Joueur tirageServeurInitial() {
-        Random random = new Random();
-        return random.nextBoolean() ? joueur1 : joueur2;
-    }
+        System.out.println("=== Nouveau Match ===");
+        System.out.println("Joueur 1 : " + joueur1.getPrenom());
+        System.out.println("Joueur 2 : " + joueur2.getPrenom());
+        System.out.println("Catégorie : " + categorie);
+        System.out.println("Niveau : " + niveau);
+        System.out.println("Nombre de sets à gagner : " + nbSetsPourGagner);
 
-    /**
-     * Méthode principale pour démarrer le match et gérer son déroulement.
-     * Utilise le clavier (Scanner) pour les Echanges.
-     */
-    public void demarrerMatch() {
-        Scanner scanner = new Scanner(System.in);
+        Joueur serveurInitial = ThreadLocalRandom.current().nextBoolean() ? joueur1 : joueur2;
+        arbitre.annoncer("Tirage au sort : " + serveurInitial.getPrenom() + " servira au premier set.");
 
-        System.out.println("=== Début du match ===");
-        System.out.println("Catégorie : " + categorie + ", Niveau : " + niveau);
-        System.out.println("Joueur 1 : " + joueur1);
-        System.out.println("Joueur 2 : " + joueur2);
+        Joueur serveurCourant = serveurInitial;
 
-        Joueur serveurInitial = tirageServeurInitial();
-        System.out.println("Le tirage au sort désigne " + serveurInitial + " au service pour le premier jeu.");
-
-        Joueur serveurSet = serveurInitial;
-
-        while (setsJoueur1 < nbSetsGagnants && setsJoueur2 < nbSetsGagnants) {
-
-            SetTennis set = new SetTennis(joueur1, joueur2);
+        while (setsJoueur1 < nbSetsPourGagner && setsJoueur2 < nbSetsPourGagner) {
+            SetTennis set = new SetTennis(joueur1, joueur2, serveurCourant);
+            Joueur gagnantSet = set.jouerSet(scanner, arbitre);
             sets.add(set);
-
-            Joueur gagnantSet = set.jouerSet(scanner, arbitre, serveurSet);
 
             if (gagnantSet == joueur1) {
                 setsJoueur1++;
-            } else {
+            } else if (gagnantSet == joueur2) {
                 setsJoueur2++;
+            } else {
+                throw new IllegalStateException("Gagnant du set inconnu.");
             }
 
-            // Score actuel du match
-            arbitre.annoncerScoreMatch(this);
+            arbitre.annoncerFinSet(gagnantSet, setsJoueur1, setsJoueur2);
 
-            // Le serveur du prochain set : on peut garder le même ou alterner.
-            // Ici, on garde le même pour rester simple.
+            serveurCourant = (serveurCourant == joueur1) ? joueur2 : joueur1;
         }
 
-        if (setsJoueur1 > setsJoueur2) {
-            vainqueur = joueur1;
-            perdant = joueur2;
-        } else {
-            vainqueur = joueur2;
-            perdant = joueur1;
-        }
+        termine = true;
+        vainqueur = (setsJoueur1 > setsJoueur2) ? joueur1 : joueur2;
 
+        arbitre.annoncerFinMatch(vainqueur, setsJoueur1, setsJoueur2);
         vainqueur.crierVictoire();
+        Joueur perdant = (vainqueur == joueur1) ? joueur2 : joueur1;
         perdant.crierDefaite();
 
-        System.out.println("Match terminé. Vainqueur : " + vainqueur
-                + " sur le score de " + getScoreMatch());
+        return vainqueur;
+    }
+
+    @Override
+    public String toString() {
+        return "Match : " + joueur1.getPrenom() + " vs " + joueur2.getPrenom()
+                + " | Sets : " + setsJoueur1 + " - " + setsJoueur2
+                + " | Terminé=" + termine;
     }
 }

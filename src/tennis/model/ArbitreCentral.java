@@ -10,37 +10,43 @@ import java.time.LocalDate;
  * @author steve
  */
 public class ArbitreCentral extends Arbitre {
-
-    private String poste; // ex: "Chaise centrale Court Philippe-Chatrier"
-
-    public ArbitreCentral(String nomNaissance,
-                          Genre genre,
+    
+/*Intitulé ou description du poste occupé par l'arbitre central. */
+    private String poste;
+    
+     public ArbitreCentral(String nomNaissance,
+                          String nomCourant,
                           String prenom,
                           String surnom,
                           LocalDate dateNaissance,
                           String lieuNaissance,
                           String nationalite,
+                          int taille,
+                          double poids,
+                          double reputationArbitre,
                           String poste) {
 
-        super(nomNaissance, genre, prenom, surnom,
-              dateNaissance, lieuNaissance, nationalite);
+        super(nomNaissance, nomCourant, prenom, surnom,
+              dateNaissance, lieuNaissance, nationalite, taille, poids, reputationArbitre);
+
+        if (poste == null || poste.isBlank()) {
+            throw new IllegalArgumentException("Le poste de l'arbitre central doit être renseigné.");
+        }
         this.poste = poste;
     }
-
     public String getPoste() {
-        return poste;
-    }
-
-    public void setPoste(String poste) {
-        this.poste = poste;
+           return poste;
+       }
+    
+    @Override
+    public void annoncer(String message) {
+        System.out.println("Arbitre central (" + poste + ") : " + message);
     }
 
     @Override
-    public void annoncer(String message) {
-        if (isMicroActif()) {
-            System.out.println("[Arbitre central] " + toString() + " (micro) : " + message);
-        } else {
-            System.out.println("[Arbitre central] " + toString() + " (sans micro) : " + message);
-        }
+    public String toString() {
+        return "Arbitre Central : " + super.toString()
+               + " | Poste : " + poste;
     }
+
 }

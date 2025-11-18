@@ -12,9 +12,9 @@ import java.time.LocalDate;
 
 public class JoueurHomme extends Joueur {
 
-    private String couleurShort;
-
-    public JoueurHomme(String nomNaissance,
+   private String couleurShort;
+   public JoueurHomme(String nomNaissance,
+                       String nomCourant,
                        String prenom,
                        String surnom,
                        LocalDate dateNaissance,
@@ -24,29 +24,38 @@ public class JoueurHomme extends Joueur {
                        double poids,
                        Main main,
                        String sponsor,
-                       String entraineur) {
+                       String entraineur,
+                       String couleurShort) {
 
-        super(nomNaissance, Genre.HOMME, prenom, surnom,
+        super(nomNaissance, nomCourant, prenom, surnom,
               dateNaissance, lieuNaissance, nationalite, taille, poids,
-              main, sponsor, entraineur);
+              Genre.HOMME, main, sponsor, entraineur);
 
-        this.couleurShort = "noir"; // valeur par défaut
-    }
-
-    @Override
-    public String getTenue() {
-        return "short " + couleurShort;
-    }
-
-    @Override
-    public void changerCouleurTenue(String nouvelleCouleur) {
-        if (nouvelleCouleur == null || nouvelleCouleur.isBlank()) {
-            return;
+        if (couleurShort == null || couleurShort.isBlank()) {
+            throw new IllegalArgumentException("La couleur du short doit être renseignée.");
         }
-        String ancienne = this.couleurShort;
+        this.couleurShort = couleurShort;
+    }
+
+    public String getCouleurShort() {
+        return couleurShort;
+    }
+   
+    //changer la couleur du short et annonce le changement 
+   public void setCouleurShort(String nouvelleCouleur) {
+        if (nouvelleCouleur == null || nouvelleCouleur.isBlank()) {
+            throw new IllegalArgumentException("La couleur du short doit être renseignée.");
+        }
+        if (!nouvelleCouleur.equalsIgnoreCase(this.couleurShort)) {
+            System.out.println(getPrenom() + " " + getNomCourant()
+                    + " change de short, nouvelle couleur : " + nouvelleCouleur + ".");
+        }
         this.couleurShort = nouvelleCouleur;
-        System.out.println(toString()
-                + " annonce : J'ai changé mon short "
-                + ancienne + " pour " + nouvelleCouleur + ".");
+    }
+   
+    @Override
+    public String toString() {
+        return "Joueur Homme : " + super.toString()
+               + " | Short : " + couleurShort;
     }
 }
