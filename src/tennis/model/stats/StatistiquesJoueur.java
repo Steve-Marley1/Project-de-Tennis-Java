@@ -10,66 +10,43 @@ package tennis.model.stats;
  */
 
 /**
- * Représente les statistiques globales d'un joueur de tennis
- * sur sa carrière et sur la saison en cours.
+ * Statistiques personnelles d'un joueur.
+ *
+ * On distingue :
+ * - les statistiques de carrière
+ * - les statistiques sur la saison en cours.
  */
 public class StatistiquesJoueur {
 
-    /** Nombre total de matchs joués en carrière. */
+    /** Matchs joués en carrière. */
     private int matchsJouesCarriere;
 
-    /** Nombre total de matchs remportés en carrière. */
+    /** Matchs gagnés en carrière. */
     private int matchsGagnesCarriere;
 
-    /** Nombre de tournois auxquels le joueur a participé. */
+    /** Matchs joués sur la saison actuelle. */
+    private int matchsJouesSaison;
+
+    /** Matchs gagnés sur la saison actuelle. */
+    private int matchsGagnesSaison;
+
+    /** Nombre de tournois auxquels le joueur a participé (carrière). */
     private int tournoisJoues;
 
-    /** Montant total des gains en carrière. */
-    private double gainsCarriere;
-
-    /** Montant total des gains sur la saison en cours. */
-    private double gainsSaison;
+    /** Gains totaux en carrière (en euros). */
+    private double gainsTotaux;
 
     /**
-     * Construit un objet StatistiquesJoueur initialisé à zéro.
+     * Constructeur par défaut.
+     * Initialise toutes les statistiques à zéro.
      */
     public StatistiquesJoueur() {
         this.matchsJouesCarriere = 0;
         this.matchsGagnesCarriere = 0;
+        this.matchsJouesSaison = 0;
+        this.matchsGagnesSaison = 0;
         this.tournoisJoues = 0;
-        this.gainsCarriere = 0.0;
-        this.gainsSaison = 0.0;
-    }
-
-    /**
-     * Construit un objet StatistiquesJoueur avec des valeurs initiales.
-     *
-     * @param matchsJouesCarriere nombre de matchs joués en carrière (>= 0)
-     * @param matchsGagnesCarriere nombre de matchs gagnés en carrière (>= 0)
-     * @param tournoisJoues nombre de tournois joués (>= 0)
-     * @param gainsCarriere gains de carrière (>= 0.0)
-     * @param gainsSaison gains de la saison (>= 0.0)
-     */
-    public StatistiquesJoueur(int matchsJouesCarriere,
-                              int matchsGagnesCarriere,
-                              int tournoisJoues,
-                              double gainsCarriere,
-                              double gainsSaison) {
-
-        if (matchsJouesCarriere < 0 || matchsGagnesCarriere < 0 ||
-            tournoisJoues < 0 || gainsCarriere < 0.0 || gainsSaison < 0.0) {
-            throw new IllegalArgumentException("Les statistiques ne peuvent pas être négatives.");
-        }
-
-        if (matchsGagnesCarriere > matchsJouesCarriere) {
-            throw new IllegalArgumentException("Les matchs gagnés ne peuvent pas dépasser les matchs joués.");
-        }
-
-        this.matchsJouesCarriere = matchsJouesCarriere;
-        this.matchsGagnesCarriere = matchsGagnesCarriere;
-        this.tournoisJoues = tournoisJoues;
-        this.gainsCarriere = gainsCarriere;
-        this.gainsSaison = gainsSaison;
+        this.gainsTotaux = 0.0;
     }
 
     public int getMatchsJouesCarriere() {
@@ -80,65 +57,82 @@ public class StatistiquesJoueur {
         return matchsGagnesCarriere;
     }
 
+    public int getMatchsJouesSaison() {
+        return matchsJouesSaison;
+    }
+
+    public int getMatchsGagnesSaison() {
+        return matchsGagnesSaison;
+    }
+
     public int getTournoisJoues() {
         return tournoisJoues;
     }
 
-    public double getGainsCarriere() {
-        return gainsCarriere;
-    }
-
-    public double getGainsSaison() {
-        return gainsSaison;
+    public double getGainsTotaux() {
+        return gainsTotaux;
     }
 
     /**
-     * Enregistre un match joué.
+     * Enregistre un match joué (victoire ou défaite).
      *
-     * @param gagne true si le joueur a gagné le match
+     * @param victoire true si le match est remporté, false sinon
      */
-    public void enregistrerMatch(boolean gagne) {
-        this.matchsJouesCarriere++;
-        if (gagne) {
-            this.matchsGagnesCarriere++;
+    public void enregistrerMatch(boolean victoire) {
+        try {
+            matchsJouesCarriere++;
+            matchsJouesSaison++;
+
+            if (victoire) {
+                matchsGagnesCarriere++;
+                matchsGagnesSaison++;
+            }
+        } catch (IllegalArgumentException e) {
+            throw e;
         }
     }
 
     /**
      * Enregistre la participation à un tournoi.
      */
-    public void enregistrerParticipationTournoi() {
-        this.tournoisJoues++;
+    public void enregistrerTournoiParticipe() {
+        tournoisJoues++;
     }
 
     /**
-     * Ajoute un montant aux gains.
+     * Ajoute des gains au total de la carrière.
      *
-     * @param montant montant positif ou nul
+     * @param montant montant à ajouter (>= 0)
      */
     public void ajouterGains(double montant) {
-        if (montant < 0.0) {
-            throw new IllegalArgumentException("Les gains doivent être positifs ou nuls.");
+        try {
+            if (montant < 0.0) {
+                throw new IllegalArgumentException("Le montant des gains doit être positif ou nul.");
+            }
+            gainsTotaux += montant;
+        } catch (IllegalArgumentException e) {
+            throw e;
         }
-
-        this.gainsCarriere += montant;
-        this.gainsSaison += montant;
     }
 
     /**
-     * Réinitialise les gains de la saison (début nouvelle saison).
+     * Réinitialise les statistiques de la saison
+     * (par exemple au début d'une nouvelle année).
      */
-    public void reinitialiserGainsSaison() {
-        this.gainsSaison = 0.0;
+    public void reinitialiserSaison() {
+        this.matchsJouesSaison = 0;
+        this.matchsGagnesSaison = 0;
     }
 
     @Override
     public String toString() {
-        return "Statistiques Joueur : " +
-                "Matchs joués = " + matchsJouesCarriere +
-                ", Matchs gagnés = " + matchsGagnesCarriere +
-                ", Tournois joués = " + tournoisJoues +
-                ", Gains carrière = " + gainsCarriere +
-                ", Gains saison = " + gainsSaison;
+        return "StatistiquesJoueur{" +
+                "matchsJouesCarriere=" + matchsJouesCarriere +
+                ", matchsGagnesCarriere=" + matchsGagnesCarriere +
+                ", matchsJouesSaison=" + matchsJouesSaison +
+                ", matchsGagnesSaison=" + matchsGagnesSaison +
+                ", tournoisJoues=" + tournoisJoues +
+                ", gainsTotaux=" + gainsTotaux +
+                '}';
     }
 }

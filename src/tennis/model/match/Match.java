@@ -11,6 +11,8 @@ package tennis.model.match;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
 import tennis.model.arbitre.Arbitre;
 import tennis.model.joueur.Joueur;
@@ -50,7 +52,7 @@ public class Match {
      * @param arbitre   arbitre en charge du match
      * @param categorie catégorie (SIMPLE_HOMME / SIMPLE_FEMME)
      * @param niveau    niveau du match (tournoi)
-     * @throws IllegalArgumentException si les paramètres sont invalides
+     * @throws IllegalArgumentException si un paramètre est invalide
      */
     public Match(Joueur joueur1,
                  Joueur joueur2,
@@ -184,7 +186,7 @@ public class Match {
      * et les statistiques de match (sets et jeux joués).
      *
      * @param set set terminé à ajouter
-     * @throws IllegalArgumentException si le set est invalide ou ne correspond pas au match
+     * @throws IllegalArgumentException si le set est invalide ou ne correspond pas aux joueurs du match
      */
     public void ajouterSetTermine(SetTennis set) {
 
@@ -273,6 +275,123 @@ public class Match {
 
         } catch (IllegalArgumentException e) {
             throw e;
+        }
+    }
+
+    /**
+     * Démarre le match selon le mode choisi.
+     *
+     * @param mode mode de déroulement (manuel, automatique silencieux ou détaillé)
+     * @throws IllegalArgumentException si le mode est null ou si le match est déjà terminé
+     */
+    public void demarrerMatch(ModeMatch mode) {
+
+        try {
+            if (mode == null) {
+                throw new IllegalArgumentException("Le mode du match ne peut pas être null.");
+            }
+            if (termine) {
+                throw new IllegalArgumentException("Ce match est déjà terminé.");
+            }
+
+            switch (mode) {
+
+                case MANUEL:
+                    jouerMatchManuel();
+                    break;
+
+                case AUTO_SILENCE:
+                    jouerMatchAutomatique(false);
+                    break;
+
+                case AUTO_AVEC_DETAILS:
+                    jouerMatchAutomatique(true);
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Mode inconnu.");
+            }
+
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Déroulement manuel du match.
+     * L'utilisateur saisit le déroulement du set avec le clavier,
+     * via la méthode jouerSet de SetTennis.
+     */
+    private void jouerMatchManuel() {
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("=== Début du match MANUEL ===");
+        System.out.println("Match : " + joueur1.getPrenom() + " vs " + joueur2.getPrenom());
+
+        while (!termine) {
+            try {
+                System.out.println("Appuyez sur Entrée pour jouer un nouveau set...");
+                scanner.nextLine();
+
+                SetTennis set = new SetTennis(joueur1, joueur2, joueur1);
+                Joueur gagnantSet = set.jouerSet(scanner, arbitre);
+
+                System.out.println("Set remporté par : " + gagnantSet.getPrenom());
+
+                ajouterSetTermine(set);
+
+            } catch (Exception ex) {
+                System.out.println("Erreur lors du déroulement manuel du match : " + ex.getMessage());
+            }
+        }
+
+        System.out.println("=== Fin du match ===");
+    }
+
+    /**
+     * Déroulement automatique du match.
+     *
+     * @param avecDetails vrai pour afficher le déroulement, faux pour un mode silencieux
+     */
+    private void jouerMatchAutomatique(boolean avecDetails) {
+
+        Random random = new Random();
+
+        if (avecDetails) {
+            System.out.println("=== Début du match AUTOMATIQUE ===");
+            System.out.println("Match : " + joueur1.getPrenom() + " vs " + joueur2.getPrenom());
+        }
+
+        while (!termine) {
+            try {
+                Joueur serveurInit = random.nextBoolean() ? joueur1 : joueur2;
+
+                SetTennis set = new SetTennis(joueur1, joueur2, serveurInit);
+
+                if (avecDetails) {
+                    System.out.println("Nouveau set. Serveur initial : " + serveurInit.getPrenom());
+                }
+
+                // En mode automatique, on ne dépend pas réellement de la saisie clavier.
+                // On passe un Scanner "vide" uniquement pour respecter la signature.
+                Scanner scannerVide = new Scanner("");
+                Joueur gagnantSet = set.jouerSet(scannerVide, arbitre);
+
+                if (avecDetails) {
+                    System.out.println("Set remporté par : " + gagnantSet.getPrenom());
+                }
+
+                ajouterSetTermine(set);
+
+            } catch (Exception ex) {
+                System.out.println("Erreur lors du déroulement automatique du match : " + ex.getMessage());
+                break;
+            }
+        }
+
+        if (avecDetails) {
+            System.out.println("=== Fin du match AUTOMATIQUE ===");
         }
     }
 

@@ -9,81 +9,111 @@ package tennis.app;
  * @author steve
  */
 
+import java.util.List;
+import java.util.Scanner;
 
-
+import tennis.model.match.Match;
+import tennis.model.match.ModeMatch;
 import tennis.model.tournoi.Tournoi;
 import tennis.model.tournoi.VilleTournoi;
 
-import tennis.model.match.Match;
-
-import java.util.List;
-
 /**
- * Classe de test pour vérifier le bon fonctionnement du tournoi :
- * - génération automatique des joueurs, arbitres, spectateurs
- * - création du premier tour Simple Homme / Simple Femme
+ * Programme de test pour le tournoi.
+ *
+ * Crée un tournoi, génère les participants,
+ * crée le premier tour Simple Homme,
+ * puis lance un match dans le mode choisi par l'utilisateur.
  */
 public class TestTournoi {
 
     public static void main(String[] args) {
 
+        Scanner scanner = new Scanner(System.in);
+
         try {
-            System.out.println("=== TEST TOURNOI ===");
+            System.out.println("=== TEST TOURNOI GRAND CHELEM ===");
 
-            // Création du tournoi
-            Tournoi tournoi = new Tournoi(VilleTournoi.PARIS, 2025);
+            int annee = 2025;
+            try {
+                System.out.print("Entrez l'année du tournoi (par défaut 2025) : ");
+                String saisie = scanner.nextLine();
+                if (!saisie.isBlank()) {
+                    annee = Integer.parseInt(saisie.trim());
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Année invalide, utilisation de 2025.");
+                annee = 2025;
+            }
 
-            System.out.println("\nCréation du tournoi...");
-            System.out.println(tournoi);
+            Tournoi tournoi = new Tournoi(VilleTournoi.PARIS, annee);
+            System.out.println("Création du tournoi : " + tournoi);
 
-            // Génération des participants
-            System.out.println("\nGénération automatique des participants...");
+            System.out.println("Génération automatique des joueurs, arbitres et spectateurs...");
             tournoi.genererParticipantsAutomatiquement();
-            System.out.println("Participants générés avec succès !");
-            System.out.println(tournoi);
+            System.out.println("Participants générés.");
 
-            // Premier tour Simple Homme
-            System.out.println("\nCréation du premier tour Simple Homme...");
+            System.out.println("Création du premier tour Simple Homme...");
             tournoi.creerPremierTourSimpleHomme();
-            System.out.println("Premier tour SH généré !");
 
-            // Premier tour Simple Femme
-            System.out.println("\nCréation du premier tour Simple Femme...");
-            tournoi.creerPremierTourSimpleFemme();
-            System.out.println("Premier tour SF généré !");
-
-            // Afficher les 3 premiers matchs de Simple Homme
-            System.out.println("\n=== APERÇU DES MATCHS SIMPLE HOMME ===");
-            List<List<Match>> tableauSH = tournoi.getTableauSimpleHomme();
-            List<Match> tour1SH = tableauSH.get(0);
-
-            for (int i = 0; i < 3; i++) {
-                Match m = tour1SH.get(i);
-                System.out.println((i + 1) + ") " 
-                        + m.getJoueur1().getPrenom()
-                        + " vs " 
-                        + m.getJoueur2().getPrenom());
+            List<List<Match>> tableauH = tournoi.getTableauSimpleHomme();
+            if (tableauH.isEmpty()) {
+                System.out.println("Aucun tour Simple Homme n'a été créé.");
+                return;
             }
 
-            // Afficher les 3 premiers matchs de Simple Femme
-            System.out.println("\n=== APERÇU DES MATCHS SIMPLE FEMME ===");
-            List<List<Match>> tableauSF = tournoi.getTableauSimpleFemme();
-            List<Match> tour1SF = tableauSF.get(0);
-
-            for (int i = 0; i < 3; i++) {
-                Match m = tour1SF.get(i);
-                System.out.println((i + 1) + ") " 
-                        + m.getJoueur1().getPrenom()
-                        + " vs " 
-                        + m.getJoueur2().getPrenom());
+            List<Match> premierTour = tableauH.get(0);
+            if (premierTour.isEmpty()) {
+                System.out.println("Aucun match dans le premier tour Simple Homme.");
+                return;
             }
 
-            System.out.println("\n=== TEST OK ===");
+            System.out.println("Nombre de matchs au premier tour Simple Homme : " + premierTour.size());
+            Match match = premierTour.get(0);
+
+            System.out.println();
+            System.out.println("Match sélectionné :");
+            System.out.println(match.toString());
+            System.out.println();
+
+            System.out.println("Choisissez le mode de déroulement du match :");
+            System.out.println("1 - Manuel");
+            System.out.println("2 - Automatique (silencieux)");
+            System.out.println("3 - Automatique (avec détails)");
+            System.out.print("Votre choix : ");
+
+            String choix = scanner.nextLine();
+            ModeMatch mode;
+
+            switch (choix) {
+                case "1":
+                    mode = ModeMatch.MANUEL;
+                    break;
+                case "2":
+                    mode = ModeMatch.AUTO_SILENCE;
+                    break;
+                case "3":
+                    mode = ModeMatch.AUTO_AVEC_DETAILS;
+                    break;
+                default:
+                    System.out.println("Choix invalide, passage en mode automatique silencieux.");
+                    mode = ModeMatch.AUTO_SILENCE;
+                    break;
+            }
+
+            System.out.println();
+            System.out.println("Démarrage du match en mode : " + mode);
+            match.demarrerMatch(mode);
+
+            System.out.println();
+            System.out.println("Résultat final du match :");
+            System.out.println(match.toString());
 
         } catch (IllegalArgumentException e) {
-            System.err.println("\nErreur détectée : " + e.getMessage());
+            System.out.println("Erreur de configuration du tournoi ou du match : " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("\nErreur inattendue : " + e.getMessage());
+            System.out.println("Erreur inattendue : " + e.getMessage());
+        } finally {
+            scanner.close();
         }
     }
 }

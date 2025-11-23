@@ -2,6 +2,7 @@ package tennis.model.match;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import tennis.model.arbitre.Arbitre;
 import tennis.model.joueur.Joueur;
@@ -134,5 +135,9 @@ public class SetTennis {
         return "Set : " + joueur1.getPrenom() + " " + jeuxJoueur1
                 + " / " + joueur2.getPrenom() + " " + jeuxJoueur2
                 + (termine ? " | Gagnant : " + gagnant.getPrenom() : "");
+    }
+
+    Joueur jouerSet(Scanner scanner, Arbitre arbitre) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

@@ -9,131 +9,103 @@ package tennis.model.stats;
  * @author steve
  */
 
-
 /**
- * Représente les statistiques d'un joueur pour un match donné.
+ * Statistiques détaillées pour un joueur sur un match donné.
  *
- * Cette classe est prévue pour stocker les statistiques d'UN joueur
- * sur UN match (et non pas sur toute sa carrière).
+ * On y retrouve :
+ * - nombre de sets et de jeux joués / gagnés
+ * - nombre d'échanges joués et de points gagnés
+ * - statistiques de service (aces, 1ers/2nds services, doubles fautes)
+ * - balles de break (obtenues et converties)
+ * - vitesse moyenne des 1ers et 2nds services.
  */
 public class StatistiquesMatch {
 
-    /** Nombre de sets joués par le joueur dans ce match. */
+    /** Nombre total de sets joués dans ce match. */
     private int setsJoues;
 
-    /** Nombre de jeux joués par le joueur dans ce match. */
+    /** Nombre de sets gagnés dans ce match. */
+    private int setsGagnes;
+
+    /** Nombre total de jeux joués. */
     private int jeuxJoues;
 
-    /** Nombre total d'échanges joués par le joueur. */
+    /** Nombre de jeux gagnés. */
+    private int jeuxGagnes;
+
+    /** Nombre total d'échanges joués. */
     private int echangesJoues;
 
-    /** Nombre total de points remportés par le joueur. */
+    /** Nombre total de points gagnés. */
     private int pointsGagnes;
 
-    /** Nombre total d'aces effectués. */
+    /** Nombre total d'aces. */
     private int aces;
 
-    /** Nombre de premiers services tentés. */
+    /** Nombre de 1ers services tentés. */
     private int premiersServices;
 
-    /** Nombre de seconds services tentés. */
-    private int deuxiemesServices;
+    /** Nombre de 2nds services tentés. */
+    private int secondsServices;
 
-    /** Nombre de doubles fautes commises. */
+    /** Nombre de doubles fautes. */
     private int doublesFautes;
 
     /** Nombre de balles de break obtenues. */
     private int ballesDeBreak;
 
-    /** Nombre de balles de break remportées. */
+    /** Nombre de balles de break converties. */
     private int ballesDeBreakGagnees;
 
-    /** Somme des vitesses des premiers services. */
-    private double sommeVitessesService1;
+    /** Somme des vitesses des 1ers services (pour moyenne). */
+    private double sommeVit1erService;
 
-    /** Nombre de premiers services mesurés. */
-    private int nbServices1Mesures;
+    /** Nombre de 1ers services mesurés. */
+    private int nb1erServiceMesures;
 
-    /** Somme des vitesses des seconds services. */
-    private double sommeVitessesService2;
+    /** Somme des vitesses des 2nds services (pour moyenne). */
+    private double sommeVit2ndService;
 
-    /** Nombre de seconds services mesurés. */
-    private int nbServices2Mesures;
+    /** Nombre de 2nds services mesurés. */
+    private int nb2ndServiceMesures;
 
     /**
-     * Construit un objet StatistiquesMatch initialisé à zéro.
+     * Constructeur par défaut.
+     * Initialise toutes les statistiques à zéro.
      */
     public StatistiquesMatch() {
         this.setsJoues = 0;
+        this.setsGagnes = 0;
         this.jeuxJoues = 0;
+        this.jeuxGagnes = 0;
         this.echangesJoues = 0;
         this.pointsGagnes = 0;
         this.aces = 0;
         this.premiersServices = 0;
-        this.deuxiemesServices = 0;
+        this.secondsServices = 0;
         this.doublesFautes = 0;
         this.ballesDeBreak = 0;
         this.ballesDeBreakGagnees = 0;
-        this.sommeVitessesService1 = 0.0;
-        this.nbServices1Mesures = 0;
-        this.sommeVitessesService2 = 0.0;
-        this.nbServices2Mesures = 0;
-    }
-
-    /**
-     * Construit un objet StatistiquesMatch avec des valeurs initiales.
-     *
-     * Toutes les valeurs doivent être positives ou nulles.
-     */
-    public StatistiquesMatch(int setsJoues,
-                             int jeuxJoues,
-                             int echangesJoues,
-                             int pointsGagnes,
-                             int aces,
-                             int premiersServices,
-                             int deuxiemesServices,
-                             int doublesFautes,
-                             int ballesDeBreak,
-                             int ballesDeBreakGagnees,
-                             double sommeVitessesService1,
-                             int nbServices1Mesures,
-                             double sommeVitessesService2,
-                             int nbServices2Mesures) {
-
-        if (setsJoues < 0 || jeuxJoues < 0 || echangesJoues < 0 || pointsGagnes < 0
-                || aces < 0 || premiersServices < 0 || deuxiemesServices < 0
-                || doublesFautes < 0 || ballesDeBreak < 0 || ballesDeBreakGagnees < 0
-                || sommeVitessesService1 < 0.0 || sommeVitessesService2 < 0.0
-                || nbServices1Mesures < 0 || nbServices2Mesures < 0) {
-            throw new IllegalArgumentException("Les statistiques de match doivent être positives ou nulles.");
-        }
-
-        if (ballesDeBreakGagnees > ballesDeBreak) {
-            throw new IllegalArgumentException("Les balles de break gagnées ne peuvent pas dépasser les balles de break obtenues.");
-        }
-
-        this.setsJoues = setsJoues;
-        this.jeuxJoues = jeuxJoues;
-        this.echangesJoues = echangesJoues;
-        this.pointsGagnes = pointsGagnes;
-        this.aces = aces;
-        this.premiersServices = premiersServices;
-        this.deuxiemesServices = deuxiemesServices;
-        this.doublesFautes = doublesFautes;
-        this.ballesDeBreak = ballesDeBreak;
-        this.ballesDeBreakGagnees = ballesDeBreakGagnees;
-        this.sommeVitessesService1 = sommeVitessesService1;
-        this.nbServices1Mesures = nbServices1Mesures;
-        this.sommeVitessesService2 = sommeVitessesService2;
-        this.nbServices2Mesures = nbServices2Mesures;
+        this.sommeVit1erService = 0.0;
+        this.nb1erServiceMesures = 0;
+        this.sommeVit2ndService = 0.0;
+        this.nb2ndServiceMesures = 0;
     }
 
     public int getSetsJoues() {
         return setsJoues;
     }
 
+    public int getSetsGagnes() {
+        return setsGagnes;
+    }
+
     public int getJeuxJoues() {
         return jeuxJoues;
+    }
+
+    public int getJeuxGagnes() {
+        return jeuxGagnes;
     }
 
     public int getEchangesJoues() {
@@ -152,8 +124,8 @@ public class StatistiquesMatch {
         return premiersServices;
     }
 
-    public int getDeuxiemesServices() {
-        return deuxiemesServices;
+    public int getSecondsServices() {
+        return secondsServices;
     }
 
     public int getDoublesFautes() {
@@ -169,133 +141,239 @@ public class StatistiquesMatch {
     }
 
     /**
-     * Retourne la vitesse moyenne des premiers services.
+     * Vitesse moyenne des 1ers services (km/h).
      *
-     * @return vitesse moyenne en km/h (ou 0.0 s'il n'y a pas de service mesuré)
+     * @return moyenne, ou 0.0 s'il n'y a aucune mesure.
      */
-    public double getVitesseMoyenneService1() {
-        if (nbServices1Mesures == 0) {
+    public double getVitesseMoyennePremierService() {
+        if (nb1erServiceMesures == 0) {
             return 0.0;
         }
-        return sommeVitessesService1 / nbServices1Mesures;
+        return sommeVit1erService / nb1erServiceMesures;
     }
 
     /**
-     * Retourne la vitesse moyenne des seconds services.
+     * Vitesse moyenne des 2nds services (km/h).
      *
-     * @return vitesse moyenne en km/h (ou 0.0 s'il n'y a pas de service mesuré)
+     * @return moyenne, ou 0.0 s'il n'y a aucune mesure.
      */
-    public double getVitesseMoyenneService2() {
-        if (nbServices2Mesures == 0) {
+    public double getVitesseMoyenneSecondService() {
+        if (nb2ndServiceMesures == 0) {
             return 0.0;
         }
-        return sommeVitessesService2 / nbServices2Mesures;
+        return sommeVit2ndService / nb2ndServiceMesures;
     }
 
     /**
-     * Enregistre un set supplémentaire joué par le joueur.
+     * Enregistre un set joué.
+     * Incrémente simplement le compteur de sets joués.
      */
     public void enregistrerSetJoue() {
-        this.setsJoues++;
+        setsJoues++;
     }
 
     /**
-     * Enregistre un jeu supplémentaire joué par le joueur.
+     * Enregistre un set gagné.
+     * Incrémente le nombre de sets gagnés,
+     * sans modifier le nombre de sets joués.
      */
-    public void enregistrerJeuJoue() {
-        this.jeuxJoues++;
+    public void enregistrerSetGagne() {
+        setsGagnes++;
     }
 
     /**
-     * Enregistre un échange gagné par le joueur.
-     * Incrémente le nombre d'échanges joués et de points gagnés.
-     */
-    public void enregistrerEchangeGagne() {
-        this.echangesJoues++;
-        this.pointsGagnes++;
-    }
-
-    /**
-     * Enregistre un échange perdu par le joueur.
-     * Incrémente uniquement le nombre d'échanges joués.
-     */
-    public void enregistrerEchangePerdu() {
-        this.echangesJoues++;
-    }
-
-    /**
-     * Ajoute un ace au compteur du joueur.
-     */
-    public void ajouterAce() {
-        this.aces++;
-    }
-
-    /**
-     * Enregistre un premier service effectué, avec sa vitesse.
+     * Ajoute des jeux joués.
      *
-     * @param vitesse vitesse du service (>= 0.0)
+     * @param nb nombre de jeux à ajouter (>= 0)
      */
-    public void ajouterPremierService(double vitesse) {
-        if (vitesse < 0.0) {
-            throw new IllegalArgumentException("La vitesse d'un service doit être positive ou nulle.");
+    public void ajouterJeuxJoues(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre de jeux ajoutés doit être positif ou nul.");
+            }
+            jeuxJoues += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
         }
-        this.premiersServices++;
-        this.sommeVitessesService1 += vitesse;
-        this.nbServices1Mesures++;
     }
 
     /**
-     * Enregistre un second service effectué, avec sa vitesse.
+     * Ajoute des jeux gagnés.
      *
-     * @param vitesse vitesse du service (>= 0.0)
+     * @param nb nombre de jeux gagnés à ajouter (>= 0)
      */
-    public void ajouterDeuxiemeService(double vitesse) {
-        if (vitesse < 0.0) {
-            throw new IllegalArgumentException("La vitesse d'un service doit être positive ou nulle.");
+    public void ajouterJeuxGagnes(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre de jeux gagnés doit être positif ou nul.");
+            }
+            jeuxGagnes += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
         }
-        this.deuxiemesServices++;
-        this.sommeVitessesService2 += vitesse;
-        this.nbServices2Mesures++;
     }
 
     /**
-     * Ajoute une double faute au compteur.
-     */
-    public void ajouterDoubleFaute() {
-        this.doublesFautes++;
-    }
-
-    /**
-     * Enregistre une balle de break obtenue.
+     * Ajoute des échanges joués.
      *
-     * @param remportee true si la balle de break est gagnée, false sinon
+     * @param nb nombre d'échanges à ajouter (>= 0)
      */
-    public void ajouterBalleDeBreak(boolean remportee) {
-        this.ballesDeBreak++;
-        if (remportee) {
-            this.ballesDeBreakGagnees++;
+    public void ajouterEchangesJoues(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre d'échanges joués doit être positif ou nul.");
+            }
+            echangesJoues += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Ajoute des points gagnés.
+     *
+     * @param nb nombre de points à ajouter (>= 0)
+     */
+    public void ajouterPointsGagnes(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre de points gagnés doit être positif ou nul.");
+            }
+            pointsGagnes += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Ajoute un certain nombre d'aces.
+     *
+     * @param nb nombre d'aces (>= 0)
+     */
+    public void ajouterAces(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre d'aces doit être positif ou nul.");
+            }
+            aces += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Incrémente le compteur de 1ers services tentés.
+     */
+    public void enregistrerPremierService() {
+        premiersServices++;
+    }
+
+    /**
+     * Incrémente le compteur de 2nds services tentés.
+     */
+    public void enregistrerSecondService() {
+        secondsServices++;
+    }
+
+    /**
+     * Ajoute des doubles fautes.
+     *
+     * @param nb nombre de doubles fautes (>= 0)
+     */
+    public void ajouterDoublesFautes(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre de doubles fautes doit être positif ou nul.");
+            }
+            doublesFautes += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Ajoute des balles de break obtenues.
+     *
+     * @param nb nombre de balles de break (>= 0)
+     */
+    public void ajouterBallesDeBreak(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre de balles de break doit être positif ou nul.");
+            }
+            ballesDeBreak += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Ajoute des balles de break converties.
+     *
+     * @param nb nombre de balles de break gagnées (>= 0)
+     */
+    public void ajouterBallesDeBreakGagnees(int nb) {
+        try {
+            if (nb < 0) {
+                throw new IllegalArgumentException("Le nombre de balles de break gagnées doit être positif ou nul.");
+            }
+            ballesDeBreakGagnees += nb;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Enregistre la vitesse d'un 1er service.
+     *
+     * @param vitesse vitesse en km/h (> 0)
+     */
+    public void enregistrerVitessePremierService(double vitesse) {
+        try {
+            if (vitesse <= 0.0) {
+                throw new IllegalArgumentException("La vitesse d'un service doit être positive.");
+            }
+            sommeVit1erService += vitesse;
+            nb1erServiceMesures++;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Enregistre la vitesse d'un 2nd service.
+     *
+     * @param vitesse vitesse en km/h (> 0)
+     */
+    public void enregistrerVitesseSecondService(double vitesse) {
+        try {
+            if (vitesse <= 0.0) {
+                throw new IllegalArgumentException("La vitesse d'un service doit être positive.");
+            }
+            sommeVit2ndService += vitesse;
+            nb2ndServiceMesures++;
+        } catch (IllegalArgumentException e) {
+            throw e;
         }
     }
 
     @Override
     public String toString() {
-        return "Statistiques Match : "
-                + "sets joués = " + setsJoues
-                + ", jeux joués = " + jeuxJoues
-                + ", échanges joués = " + echangesJoues
-                + ", points gagnés = " + pointsGagnes
-                + ", aces = " + aces
-                + ", premiers services = " + premiersServices
-                + ", seconds services = " + deuxiemesServices
-                + ", doubles fautes = " + doublesFautes
-                + ", balles de break = " + ballesDeBreak
-                + ", balles de break gagnées = " + ballesDeBreakGagnees
-                + ", vitesse moyenne 1er service = " + getVitesseMoyenneService1()
-                + ", vitesse moyenne 2nd service = " + getVitesseMoyenneService2();
-    }
-
-    public void ajouterJeuxJoues(int jeuxJ1) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return "StatsMatch{" +
+                "setsJoues=" + setsJoues +
+                ", setsGagnes=" + setsGagnes +
+                ", jeuxJoues=" + jeuxJoues +
+                ", jeuxGagnes=" + jeuxGagnes +
+                ", echangesJoues=" + echangesJoues +
+                ", pointsGagnes=" + pointsGagnes +
+                ", aces=" + aces +
+                ", premiersServices=" + premiersServices +
+                ", secondsServices=" + secondsServices +
+                ", doublesFautes=" + doublesFautes +
+                ", ballesDeBreak=" + ballesDeBreak +
+                ", ballesDeBreakGagnees=" + ballesDeBreakGagnees +
+                ", vitMoy1er=" + getVitesseMoyennePremierService() +
+                ", vitMoy2nd=" + getVitesseMoyenneSecondService() +
+                '}';
     }
 }
-
