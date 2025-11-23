@@ -9,6 +9,8 @@ package tennis.app;
  * @author steve
  */
 
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -28,31 +30,35 @@ public class TennisApp {
 
     public static void main(String[] args) {
 
-        System.setProperty("file.encoding", "UTF-8");
-        System.setProperty("sun.stdout.encoding", "UTF-8");
-        System.setProperty("sun.stderr.encoding", "UTF-8");
-
-        Scanner scanner = new Scanner(System.in);
-
-        boolean quitter = false;
-
-        while (!quitter) {
-            afficherMenuPrincipal();
-            int choix = lireChoix(scanner, 1, 4);
-
-            switch (choix) {
-                case 1 -> creerTournoi(scanner);
-                case 2 -> listerTournois();
-                case 3 -> gererTournoi(scanner);
-                case 4 -> {
-                    quitter = true;
-                    System.out.println("Au revoir.");
-                }
-                default -> System.out.println("Choix invalide.");
-            }
+        // Configuration explicite de la sortie standard en UTF-8
+        try {
+            PrintStream outUtf8 = new PrintStream(System.out, true, "UTF-8");
+            PrintStream errUtf8 = new PrintStream(System.err, true, "UTF-8");
+            System.setOut(outUtf8);
+            System.setErr(errUtf8);
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("Impossible de configurer la sortie UTF-8 : " + e.getMessage());
         }
 
-        scanner.close();
+        try (Scanner scanner = new Scanner(System.in, "UTF-8")) {
+            boolean quitter = false;
+            
+            while (!quitter) {
+                afficherMenuPrincipal();
+                int choix = lireChoix(scanner, 1, 4);
+                
+                switch (choix) {
+                    case 1 -> creerTournoi(scanner);
+                    case 2 -> listerTournois();
+                    case 3 -> gererTournoi(scanner);
+                    case 4 -> {
+                        quitter = true;
+                        System.out.println("Au revoir.");
+                    }
+                    default -> System.out.println("Choix invalide.");
+                }
+            }
+        }
     }
 
     /**
@@ -278,9 +284,9 @@ public class TennisApp {
     /**
      * Permet de choisir et de lancer un match du premier tour.
      *
-     * @param tournoi        tournoi concerné
-     * @param simpleHomme    true pour tableau homme, false pour femme
-     * @param scanner        scanner de saisie
+     * @param tournoi     tournoi concerné
+     * @param simpleHomme true pour tableau homme, false pour femme
+     * @param scanner     scanner de saisie
      */
     private static void lancerMatchPremierTour(Tournoi tournoi,
                                                boolean simpleHomme,
@@ -328,20 +334,12 @@ public class TennisApp {
         int choixMode = lireChoix(scanner, 1, 3);
         ModeMatch mode;
 
-        switch (choixMode) {
-            case 1:
-                mode = ModeMatch.MANUEL;
-                break;
-            case 2:
-                mode = ModeMatch.AUTO_SILENCE;
-                break;
-            case 3:
-                mode = ModeMatch.AUTO_AVEC_DETAILS;
-                break;
-            default:
-                mode = ModeMatch.AUTO_SILENCE;
-                break;
-        }
+        mode = switch (choixMode) {
+            case 1 -> ModeMatch.MANUEL;
+            case 2 -> ModeMatch.AUTO_SILENCE;
+            case 3 -> ModeMatch.AUTO_AVEC_DETAILS;
+            default -> ModeMatch.AUTO_SILENCE;
+        };
 
         try {
             System.out.println();
