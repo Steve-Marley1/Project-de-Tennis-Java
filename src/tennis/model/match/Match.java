@@ -296,20 +296,13 @@ public class Match {
 
             switch (mode) {
 
-                case MANUEL:
-                    jouerMatchManuel();
-                    break;
+                case MANUEL -> jouerMatchManuel();
 
-                case AUTO_SILENCE:
-                    jouerMatchAutomatique(false);
-                    break;
+                case AUTO_SILENCE -> jouerMatchAutomatique(false);
 
-                case AUTO_AVEC_DETAILS:
-                    jouerMatchAutomatique(true);
-                    break;
+                case AUTO_AVEC_DETAILS -> jouerMatchAutomatique(true);
 
-                default:
-                    throw new IllegalArgumentException("Mode inconnu.");
+                default -> throw new IllegalArgumentException("Mode inconnu.");
             }
 
         } catch (IllegalArgumentException e) {

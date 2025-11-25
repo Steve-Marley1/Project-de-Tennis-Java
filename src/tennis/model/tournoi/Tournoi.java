@@ -137,16 +137,19 @@ public class Tournoi {
      */
     private Surface determinerSurface(VilleTournoi ville) {
         switch (ville) {
-            case MELBOURNE:
+            case MELBOURNE -> {
                 return Surface.PLEXICUSHION;
-            case PARIS:
+            }
+            case PARIS -> {
                 return Surface.TERRE_BATTUE;
-            case LONDRES:
+            }
+            case LONDRES -> {
                 return Surface.GAZON;
-            case NEW_YORK:
+            }
+            case NEW_YORK -> {
                 return Surface.DECOTURF;
-            default:
-                throw new IllegalArgumentException("Ville inconnue.");
+            }
+            default -> throw new IllegalArgumentException("Ville inconnue.");
         }
     }
 

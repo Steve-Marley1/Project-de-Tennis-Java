@@ -1,4 +1,15 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package tennis.model.match;
+
+/**
+ *
+ * @author steve
+ */
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,12 +151,12 @@ public class Jeu {
      * Convertit un nombre de points en notation de tennis.
      */
     private String convertirPoints(int p) {
-        switch (p) {
-            case 0: return "0";
-            case 1: return "15";
-            case 2: return "30";
-            case 3: return "40";
-            default: return "40";
-        }
+        return switch (p) {
+            case 0 -> "0";
+            case 1 -> "15";
+            case 2 -> "30";
+            case 3 -> "40";
+            default -> "40";
+        };
     }
 }

@@ -21,9 +21,7 @@ public class TestPartie2 {
 
     public static void main(String[] args) {
 
-        Scanner scanner = new Scanner(System.in);
-
-        try {
+        try (Scanner scanner = new Scanner(System.in)) {
             // Création des joueurs (mêmes que dans TestPartie1 pour la cohérence)
             JoueurHomme joueur1 = new JoueurHomme(
                     "DUPONT",
@@ -157,8 +155,6 @@ public class TestPartie2 {
             System.out.println("Erreur de données : " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Erreur inattendue : " + e.getMessage());
-        } finally {
-            scanner.close();
         }
     }
 }
